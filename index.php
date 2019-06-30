@@ -13,7 +13,7 @@
             <div class="col-sm-8"><br>
     <form method="post" enctype="multipart/form-data" action="post.php">
         <input type="file" class="form-control-file" id="img" name="img"> <br>
-        <input type="submit" class="btn btn-success" value="Оценить">
+        <input type="submit" class="btn btn-success" value="Send">
     </form>
     </div> 
     <div class="col-sm-8">
@@ -29,7 +29,7 @@
                     $user = 'u0722890_marvek'; // имя пользователя
                     $password = 'sosochek322'; // пароль
                     $link = mysqli_connect($host, $user, $password, $database) // подключаемся к серверу
-                    or die("Ошибка " . mysqli_error($link));
+                    or die("Error " . mysqli_error($link));
                     $r=$link->set_charset("utf8");
                     
  $top="SELECT * FROM `top` ORDER BY `top`.`score` DESC";

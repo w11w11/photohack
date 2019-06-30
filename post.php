@@ -4,7 +4,7 @@
                     $user = 'u0722890_marvek'; // имя пользователя
                     $password = 'sosochek322'; // пароль
                     $link = mysqli_connect($host, $user, $password, $database) // подключаемся к серверу
-                    or die("Ошибка " . mysqli_error($link));
+                    or die("Error " . mysqli_error($link));
                     $r=$link->set_charset("utf8");
                     
 if($_GET['img']!="")
@@ -21,8 +21,8 @@ if(isset($_FILES) && $_FILES['img']['error'] == 0 && $_FILES['img']['tmp_name']!
                     move_uploaded_file($_FILES['img']['tmp_name'], $destiation_dir );
                     $img='../img/'.md5($_FILES['img']['tmp_name']).'.jpg';
                     $img2='/img/'.md5($_FILES['img']['tmp_name']).'.jpg';
-                    $authorization = "SMdcT56bKZJG3cnbj96DFAJR" . ":" . "E8CHewAI8DlT34LjP5wPHgYNGiPM7cA0NCkhiSa7MAxSIzBJ";
-                    $url = "https://api.everypixel.com/v1/quality_ugc?url=http://photohack.voffi.ru".$img2;
+                    $authorization = "kK7FIAlS5KO51R0g6nQE19Z1" . ":" . "WwlacnYEcB5Cqm1scuko2N1e6S1yEj1aVfW2eoABeEKvt03n";
+                    $url = "https://api.everypixel.com/v1/quality_ugc?url=http://ph.voffi.ru".$img2;
 
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_USERPWD, $authorization);
@@ -35,12 +35,12 @@ if(isset($_FILES) && $_FILES['img']['error'] == 0 && $_FILES['img']['tmp_name']!
                     $score=round($json->quality->score,3)*1000;
                     
                     
-                    
+                   
                     $sql = mysqli_query($link, "INSERT INTO `top`(`img`, `score`) VALUES ('".$img."','".$score."')");
                     unset($_FILES);
                 }
      $data = array(
-          "image_url[1]" => "http://photohack.voffi.ru".$img2, 
+          "image_url[1]" => "http://ph.voffi.ru".$img2, 
           "rotate[1]" => "0",
           "flip[1]" => "0",
           "crop[1]" => "0,0,1,1",
@@ -61,31 +61,52 @@ if(isset($_FILES) && $_FILES['img']['error'] == 0 && $_FILES['img']['tmp_name']!
         }
         curl_close($ch);
         $phimg = $result;
+         $recomindation = array
+                        (
+                            1 => 'Your photo is not so good to post. It`s unfocused, overexposed or have got unbalanced composition. So, your photo could consist of screenshots of messages, logotypes or photos that are too blurred.
+                                    Recomendations: Add some brightness, composition and change the pose on your photo. Always you could try to add some effects while using Photolab.',
+                            2 => 'Your photo belongs to the "bad" category, which consists of everyday frames. These photos primitively reflect the surrounding reality and have a low technical quality.
+                                    Recommendation: Try to adjust the illumination, add filters from PhotoLab',
+                            3 => 'Your photo belongs to the category of "medium" photos make up the bulk of the Instagram user content. Some authors try their best: they look for the look and apply filters. A photo may be good, but we still see that they are not professionals.
+                                    Recomendations: please add some brightness and contrast to your photo, and use PhotoLab filters to make your photo more attractive.',
+                            4 => 'You have a good image, it looks like pictures of a typical Instagram blogger. Staged photos with thoughtful composition, using filters or retouching and without technical flaws.
+                                    Recomendations: On this step of your photoblogging life you need to think of only perfect quality of photo. Make it more professional, and unique.',
+                            5 => 'Excellent image, professional photo, made without flaws.
+                                    Recommendation: Keep up the good work! You`re good!'
+                        );
+                    if(round($json->quality->score,2)<=0.2) $description = $recomindation[1];
+                    if(round($json->quality->score,2)>0.2 and round($json->quality->score,2)<=0.4) $description = $recomindation[2];
+                    if(round($json->quality->score,2)>0.4 and round($json->quality->score,2)<=0.6) $description = $recomindation[3];
+                    if(round($json->quality->score,2)>0.6 and round($json->quality->score,2)<=0.8) $description = $recomindation[4];
+                    if(round($json->quality->score,2)>0.8) $description = $recomindation[4];
 
 ?>
 <html>
 <head>
-  <title><?='Мое фото набрало '.$score.' очков в рейтинге. Сможешь побить мой рекорд?)'?></title>
-  <meta property="og:url"           content="http://photohack.voffi.ru/post.php?img=<?=$img2?>" />
+  <title><?='My photo typed '.$score.' points in the ranking. Can you beat my score?)'?></title>
+  
+  <meta property="og:url"           content="http://ph.voffi.ru/post.php?img=<?=$img2?>" />
   <meta property="og:type"          content="website" />
-  <meta property="og:title"         content="<?='Мое фото набрало '.$score.' очков в рейтинге. Сможешь побить мой рекорд?)'?>" />
+  <meta property="og:title"         content="<?='My photo typed '.$score.' points in the ranking. Can you beat my score?)'?>" />
+  <meta property="og:description"   content="<?=$description?>" />
   <meta property="og:image"         content="<?=$phimg?>" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src="style.css"></script>
+
 </head>
 <body>
 <div class="container">
          <div class="row justify-content-center">
             <div class="col-sm-8"><br><center>
-<h1><?='Фото набрало '.$score.' очков в рейтинге.'?></h1><br>
+<h1><?='Photo scored '.$score.' points in the ranking.'?></h1><br>
 <div class="ch">
-<a href="http://photohack.voffi.ru">Попробовать снова</a><br>
+<a href="http://ph.voffi.ru">Try again</a><br>
 <br>
-<img src="<?=$phimg?>" style="width: 250px;/>
+<img src="<?=$phimg?>" style="width: 250px;"/>
+<br><p id="h1" style="display:none"><?=$description?></p>
+
+
   <!-- Load Facebook SDK for JavaScript -->
   <div id="fb-root"></div>
   <script>(function(d, s, id) {
@@ -98,7 +119,8 @@ if(isset($_FILES) && $_FILES['img']['error'] == 0 && $_FILES['img']['tmp_name']!
 <br>
   <!-- Your share button code -->
   <div class="fb-share-button" 
-    data-href="http://photohack.voffi.ru/post.php?img=<?=$img2?>"
+    onClick="document.getElementById('h1').style.display='';return false;"
+    data-href="http://ph.voffi.ru/post.php?img=<?=$img2?>"
     data-layout="button_count">
   </div><br></center>
   </div>
@@ -116,7 +138,7 @@ if(isset($_FILES) && $_FILES['img']['error'] == 0 && $_FILES['img']['tmp_name']!
                     $user = 'u0722890_marvek'; // имя пользователя
                     $password = 'sosochek322'; // пароль
                     $link = mysqli_connect($host, $user, $password, $database) // подключаемся к серверу
-                    or die("Ошибка " . mysqli_error($link));
+                    or die("Error " . mysqli_error($link));
                     $r=$link->set_charset("utf8");
                     
  $top="SELECT * FROM `top` ORDER BY `top`.`score` DESC";
